@@ -1,0 +1,110 @@
+(function (global) {
+  var TONES = [
+    { id: 'original', name: '常规型' },
+    { id: 'direct', name: '直接型' },
+    { id: 'encouraging', name: '鼓励型' },
+    { id: 'questioning', name: '启发型' }
+  ];
+
+  var LENGTHS = [
+    { id: 'short', name: '简洁型' },
+    { id: 'medium', name: '常规型' },
+    { id: 'detailed', name: '详细型' }
+  ];
+
+  var DEMO_GRADE = 'primary';
+
+  var COMMENT_COPY = {
+    primary: {
+      variants: {
+        short: {
+          original: '主题清楚，第二段例子偏少。补一个小故事，把细节写具体，读者会更好理解。',
+          direct: '主题清楚，第二段例子偏少。补一个小故事，结尾再点一下你想说的道理。',
+          encouraging: '主题写得很清楚，开头也不错。第二段再加一个小故事，结尾呼应一下，文章会更完整。',
+          questioning: '主题已经写清楚了。第二段的故事能更好地说明你的道理吗？要不要换一个更具体的例子？'
+        },
+        medium: {
+          original: '你想写的主题很清楚，开头就让人知道在写什么。第二段如果再加一个小故事，把细节写具体一点，读者会更容易明白你想表达的道理。',
+          direct: '你想写的主题很清楚，开头也不错。第二段可以再具体一点：加一个小故事，写清楚发生了什么，并说明它怎样支持你的观点。结尾再点一下主题，会更完整。',
+          encouraging: '你的主题写得很清楚，开头也能让人很快知道你想说什么，这是很好的基础。接下来可以重点改第二段：加一个具体的小故事，把细节写清楚，并说明它和主题的关系。结尾再呼应一下，文章会更完整。',
+          questioning: '你的主题已经比较清楚了。第二段的故事和观点之间的联系还可以再想一想：这个例子最能说明你的道理吗？如果换一个更具体的小故事，并在结尾点题，会不会更好？'
+        },
+        detailed: {
+          original: '你想写的主题比较清楚，开头也能让人很快进入你的文章。如果想让读者更明白你想表达的道理，可以重点改第二段：现在写得还略概括，可以换成一个具体的小故事，写清楚发生了什么，再简单说明它和主题的关系。结尾如果能再点一下主题，整篇文章会更完整。',
+          direct: '主题比较清楚，开头也能让人知道你想写什么。需要重点改的是第二段：现在写得还比较概括，和主题的联系不够紧。建议换成一次具体的小故事，写清楚人物、事情和结果，再说明它怎样证明你的观点。结尾也要回到主题，不要只泛泛总结。这样文章会更有层次，也更有说服力。',
+          encouraging: '这篇文章的优点是主题清楚，开头自然，读者容易明白你想表达什么。如果想让文章更有力量，可以重点打磨第二段：把概括的例子换成真实、具体的小故事，写清楚发生了什么，再点明它怎样支持你的观点。结尾如果能呼应开头或再次点题，文章会更完整，也更容易打动读者。',
+          questioning: '主题已经比较清楚，开头也能把读者带入你的文章。你可以继续问自己：第二段的故事真的能直接说明你的观点吗？如果换成一次更具体的经历，读者会不会更容易被说服？故事里最关键的细节是什么？结尾还能不能回到开头或主题，让文章更完整？想清楚后再改，文章的层次和说服力都会更明显。'
+        }
+      }
+    },
+    junior: {
+      variants: {
+        short: {
+          original: '中心明确，第二段论据偏少。补充具体事例，结尾回扣中心即可。',
+          direct: '中心明确，但第二段论据偏弱。建议换成更贴近主题的具体事例，并在结尾再次点明观点。',
+          encouraging: '中心比较清楚，开头进入主题很快。第二段再补一个具体事例，结尾呼应观点，文章会更有说服力。',
+          questioning: '你的中心已经比较清楚了。第二段这个论据能充分证明观点吗？如果换成一次具体经历，效果会不会更好？'
+        },
+        medium: {
+          original: '文章中心比较清楚，开头能较快进入主题。第二段的论据与观点联系还不够紧密，建议补充更具体的事例，并在结尾回扣中心，增强说服力。',
+          direct: '文章中心比较清楚，开头能快速进入主题。主要问题在第二段：论据和观点联系不够紧，建议补充一个更具体的事例，并写清它如何证明主题。结尾还可以再回扣中心，让表达更完整。',
+          encouraging: '这篇文章的中心比较清楚，开头也能自然进入主题，这是很好的基础。接下来可以重点修改第二段，把论据写得更具体一些，并说明它和观点之间的关系。结尾如果再呼应一次中心，文章会更完整、更有说服力。',
+          questioning: '这篇文章的中心已经比较清楚了。第二段的论据和观点之间的联系还可以再想一想：这个例子最能证明你的观点吗？如果补充一次更具体的经历，并在结尾回扣中心，文章的说服力会不会更强？'
+        },
+        detailed: {
+          original: '文章中心比较清楚，开头能较快进入主题，整体方向没有偏。第二段的论据还可以更具体：建议补充一次真实经历，写清事件与结果，并说明它如何支撑观点。结尾回扣中心，文章会更有说服力。',
+          direct: '文章中心比较清楚，开头能快速进入主题，整体方向没有偏。需要重点修改的是第二段：目前论据还比较概括，和观点之间的联系不够紧密。建议换成一次具体经历，写清人物、事件和结果，再补一句分析，说明这个事例怎样证明主题。结尾部分也要回扣中心，避免停在泛泛表态上。这样文章会更有层次，观点也会更有说服力。',
+          encouraging: '这篇文章的优点是中心比较清楚，开头能较快进入主题，读者容易知道你想表达什么。接下来如果想让文章更有力量，可以重点打磨第二段：把现在比较概括的论据换成一次真实、具体的经历，写清楚人物、事件和结果，再点明它怎样证明你的观点。结尾如果能呼应开头或再次点题，文章会显得更完整，也更容易打动读者。',
+          questioning: '这篇文章的中心已经比较清楚了，开头也能把读者带入主题。你可以继续追问自己几个问题：第二段这个论据真的能直接证明观点吗？如果把它换成一次具体经历，读者会不会更容易被说服？这个经历里最关键的细节是什么？结尾是否还能回到开头或中心，让文章形成闭环？把这些问题想清楚后再修改，文章的层次和说服力都会更明显。'
+        }
+      }
+    }
+  };
+
+  var STORAGE_KEY = 'cc-report-style-state';
+
+  function getCommentPack() {
+    return COMMENT_COPY[DEMO_GRADE] || COMMENT_COPY.primary;
+  }
+
+  function getOriginalText() {
+    return getCommentPack().variants.medium.original;
+  }
+
+  function getPreviewText(tone, length) {
+    var pack = getCommentPack();
+    return pack.variants[length][tone];
+  }
+
+  function loadState() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return { tone: 'original', length: 'medium' };
+      var parsed = JSON.parse(raw);
+      return {
+        tone: parsed.tone || 'original',
+        length: parsed.length || 'medium'
+      };
+    } catch (e) {
+      return { tone: 'original', length: 'medium' };
+    }
+  }
+
+  function saveState(state) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (e) {}
+  }
+
+  global.ReportStyleConfig = {
+    TONES: TONES,
+    LENGTHS: LENGTHS,
+    COMMENT_COPY: COMMENT_COPY,
+    STORAGE_KEY: STORAGE_KEY,
+    getCommentPack: getCommentPack,
+    getOriginalText: getOriginalText,
+    getPreviewText: getPreviewText,
+    loadState: loadState,
+    saveState: saveState
+  };
+})(typeof window !== 'undefined' ? window : globalThis);

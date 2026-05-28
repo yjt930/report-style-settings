@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>切换批改内容展示 · 移动端</title>
+  <script src="./shared/demo-guard.js"></script>
+  <script src="./shared/report-style-config.js"></script>
+  <style>
+    :root {
+      --primary: #0071fd;
+      --text: #161d29;
+      --text-secondary: #92959c;
+      --border: #ebedf0;
+      --bg: #f5f6f8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "PingFang SC", -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #eef0f3;
+      min-height: 100vh;
+      color: var(--text);
+    }
+
+    .mobile-demo-shell {
+      max-width: 430px;
+      min-height: 100vh;
+      margin: 0 auto;
+      position: relative;
+      background: var(--bg);
+      overflow: hidden;
+    }
+
+    .mobile-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px 10px;
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .mobile-topbar-back {
+      width: 24px;
+      height: 24px;
+      border: none;
+      background: none;
+      color: #1f1f1f;
+      font-size: 20px;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .mobile-topbar-title {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .mobile-topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .mobile-page-content {
+      padding: 16px;
+      padding-bottom: 40px;
+    }
+
+    .essay-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .essay-card-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .essay-card-text {
+      font-size: 14px;
+      line-height: 1.7;
+      color: #333;
+    }
+
+    .essay-standard {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #fff;
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 15px;
+      color: var(--text);
+    }
+
+    .mobile-mask {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      z-index: 10;
+    }
+
+    .mobile-sheet {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 20;
+      max-width: 430px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 16px 16px 0 0;
+      padding: 20px 16px calc(16px + env(safe-area-inset-bottom));
+      max-height: 88vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sheet-handle {
+      width: 36px;
+      height: 4px;
+      border-radius: 999px;
+      background: #dcdddf;
+      margin: 0 auto 16px;
+      flex-shrink: 0;
+    }
+
+    .sheet-title {
+      text-align: center;
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 12px;
+      flex-shrink: 0;
+    }
+
+    .sheet-tip {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-shrink: 0;
+    }
+
+    .sheet-tip-icon {
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+      margin-top: 2px;
+      color: var(--primary);
+    }
+
+    .sheet-tip-text {
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text-secondary);
+    }
+
+    .sheet-scroll {
+      overflow-y: auto;
+      flex: 1;
+      min-height: 0;
+      padding-right: 2px;
+    }
+
+    .sheet-section-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 4px 0 10px;
+    }
+
+    .option-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .option-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      padding: 14px 14px 14px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      background: #fff;
+      text-align: left;
+      cursor: pointer;
+      font-family: inherit;
+      transition: border-color .2s ease, background .2s ease;
+    }
+
+    .option-card:active { background: #fafafa; }
+
+    .option-card.selected {
+      border-color: var(--primary);
+      background: rgba(0, 113, 253, 0.03);
+    }
+
+    .option-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      background: #f2f3f5;
+      color: #6b6f78;
+    }
+
+    .option-card.selected .option-icon {
+      background: rgba(0, 113, 253, 0.1);
+      color: var(--primary);
+    }
+
+    .option-body { flex: 1; min-width: 0; }
+
+    .option-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    .option-radio {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 1.5px solid #c4c7cc;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .option-card.selected .option-radio {
+      border-color: var(--primary);
+      background: var(--primary);
+    }
+
+    .option-card.selected .option-radio::after {
+      content: "";
+      position: absolute;
+      left: 7px;
+      top: 4px;
+      width: 5px;
+      height: 9px;
+      border: solid #fff;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+
+    .preview-block {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      background: #fafafc;
+      margin-bottom: 8px;
+    }
+
+    .preview-block-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .preview-demo-tag {
+      display: inline-flex;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #8a6a00;
+      background: rgba(255, 193, 7, 0.14);
+      border: 1px solid rgba(255, 193, 7, 0.28);
+    }
+
+    .preview-note {
+      font-size: 12px;
+      line-height: 1.6;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+    }
+
+    .preview-text {
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--text);
+      white-space: pre-wrap;
+    }
+
+    .preview-text-muted { color: #6b6f78; }
+
+    .sheet-footer {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+      flex-shrink: 0;
+    }
+
+    .sheet-btn {
+      flex: 1;
+      height: 46px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+    }
+
+    .sheet-btn-cancel {
+      background: #fff;
+      border: 1px solid #dcdddf;
+      color: var(--text);
+    }
+
+    .sheet-btn-confirm {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .back-web-link {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      z-index: 30;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.92);
+      border: 1px solid var(--border);
+      color: var(--primary);
+      font-size: 12px;
+      text-decoration: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+
+    @media (min-width: 431px) {
+      .mobile-demo-shell {
+        box-shadow: 0 8px 40px rgba(0,0,0,.12);
+        min-height: calc(100vh - 32px);
+        margin: 16px auto;
+        border-radius: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="back-web-link" href="./飞象星球.html">返回 Web 版</a>
+
+  <div class="mobile-demo-shell">
+    <div class="mobile-topbar">
+      <button class="mobile-topbar-back" type="button" aria-label="返回" onclick="history.back()">‹</button>
+      <div class="mobile-topbar-title">作文作业详情</div>
+      <div class="mobile-topbar-actions">
+        <span>1稿</span>
+        <span>⋯</span>
+      </div>
+    </div>
+
+    <div class="mobile-page-content">
+      <div class="essay-card">
+        <div class="essay-card-label">📑 作文题</div>
+        <div class="essay-card-text">请以「生活中的温暖」为题，写一篇不少于 400 字的记叙文，要求通过具体事例表达真情实感。</div>
+      </div>
+      <div class="essay-standard">
+        <span>⏱ 批改标准</span>
+        <span>›</span>
+      </div>
+    </div>
+
+    <div class="mobile-mask" aria-hidden="true"></div>
+
+    <div class="mobile-sheet" role="dialog" aria-labelledby="sheetTitle">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title" id="sheetTitle">切换批改内容展示</div>
+      <div class="sheet-tip">
+        <svg class="sheet-tip-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.2"/>
+          <path d="M8 7.2V11" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+          <circle cx="8" cy="5.1" r="0.75" fill="currentColor"/>
+        </svg>
+        <div class="sheet-tip-text">切换后全班生效；不同批改结果，编辑后会独立保存</div>
+      </div>
+
+      <div class="sheet-scroll">
+        <div class="sheet-section-title">语气类型</div>
+        <div class="option-list" id="toneList"></div>
+
+        <div class="sheet-section-title">评语长度</div>
+        <div class="option-list" id="lengthList"></div>
+
+        <div class="preview-block">
+          <div class="preview-block-label">评语效果预览 <span class="preview-demo-tag">示例</span></div>
+          <p class="preview-note">以下文案为示意样例，仅帮助感受语气与长度差异，不是某篇作文的真实批改结果。</p>
+          <div class="preview-block-label" style="font-weight:500;font-size:12px;color:#6b6f78;">原始评语</div>
+          <div class="preview-text preview-text-muted" id="originalPreview"></div>
+          <div class="preview-block-label" style="margin-top:12px;font-weight:500;font-size:12px;color:#0071fd;">当前效果</div>
+          <div class="preview-text" id="currentPreview"></div>
+        </div>
+      </div>
+
+      <div class="sheet-footer">
+        <button class="sheet-btn sheet-btn-cancel" type="button" id="cancelBtn">取消</button>
+        <button class="sheet-btn sheet-btn-confirm" type="button" id="confirmBtn">确定</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  (function () {
+    var cfg = window.ReportStyleConfig;
+    var state = cfg.loadState();
+
+    var TONE_ICONS = {
+      original: '◎',
+      direct: '◉',
+      encouraging: '☺',
+      questioning: '?'
+    };
+
+    var LENGTH_ICONS = {
+      short: '—',
+      medium: '≡',
+      detailed: '☰'
+    };
+
+    function render() {
+      var toneList = document.getElementById('toneList');
+      var lengthList = document.getElementById('lengthList');
+      toneList.innerHTML = '';
+      lengthList.innerHTML = '';
+
+      cfg.TONES.forEach(function (t) {
+        toneList.appendChild(createOptionCard('tone', t.id, t.name, TONE_ICONS[t.id] || '•', state.tone === t.id));
+      });
+
+      cfg.LENGTHS.forEach(function (l) {
+        lengthList.appendChild(createOptionCard('length', l.id, l.name, LENGTH_ICONS[l.id] || '•', state.length === l.id));
+      });
+
+      document.getElementById('originalPreview').textContent = cfg.getOriginalText();
+      document.getElementById('currentPreview').textContent = cfg.getPreviewText(state.tone, state.length);
+    }
+
+    function createOptionCard(group, id, title, icon, selected) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'option-card' + (selected ? ' selected' : '');
+      btn.innerHTML =
+        '<div class="option-icon">' + icon + '</div>' +
+        '<div class="option-body">' +
+          '<div class="option-title">' + title + '</div>' +
+        '</div>' +
+        '<div class="option-radio" aria-hidden="true"></div>';
+      btn.addEventListener('click', function () {
+        state[group] = id;
+        cfg.saveState(state);
+        render();
+      });
+      return btn;
+    }
+
+    document.getElementById('cancelBtn').addEventListener('click', function () {
+      history.back();
+    });
+
+    document.getElementById('confirmBtn').addEventListener('click', function () {
+      cfg.saveState(state);
+      history.back();
+    });
+
+    render();
+  })();
+  </script>
+</body>
+</html>
