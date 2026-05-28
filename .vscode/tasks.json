@@ -1,0 +1,37 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "PRD: 监听 md 并同步",
+      "type": "shell",
+      "command": "node scripts/watch-prd.mjs",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "prd-watch",
+        "pattern": { "regexp": "^$" },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "\\[watch-prd\\] 监听中",
+          "endsPattern": "\\[watch-prd\\] 已同步"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "showReuseMessage": false
+      }
+    },
+    {
+      "label": "PRD: 手动同步一次",
+      "type": "shell",
+      "command": "node scripts/sync-prd.mjs",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "name": "report-style-settings",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "prd:sync": "node scripts/sync-prd.mjs",
+    "prd:watch": "node scripts/watch-prd.mjs"
+  }
+}
