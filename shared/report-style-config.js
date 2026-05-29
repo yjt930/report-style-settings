@@ -1,6 +1,6 @@
 (function (global) {
   var TONES = [
-    { id: 'original', name: '常规型' },
+    { id: 'original', name: '均衡型' },
     { id: 'direct', name: '直接型' },
     { id: 'encouraging', name: '鼓励型' },
     { id: 'questioning', name: '启发型' }
@@ -8,7 +8,7 @@
 
   var LENGTHS = [
     { id: 'short', name: '简洁型' },
-    { id: 'medium', name: '常规型' },
+    { id: 'medium', name: '均衡型' },
     { id: 'detailed', name: '详细型' }
   ];
 
